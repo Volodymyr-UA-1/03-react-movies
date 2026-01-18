@@ -1,3 +1,4 @@
+
 export interface Movie {
     id: number;
     poster_path: string;
@@ -7,3 +8,4 @@ export interface Movie {
     release_date: string;
     vote_average: number;
 }
+

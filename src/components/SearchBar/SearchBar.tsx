@@ -17,8 +17,7 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
                     border: '1px solid #713200',
                     padding: '16px',
                     color: '#713200',
-                },
-            
+                },     
   });
             return; 
         }
