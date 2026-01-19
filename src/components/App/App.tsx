@@ -1,6 +1,6 @@
-import css from "./App.module.css"
-import SearchBar from "../SearchBar/SearchBar"
-import toast,{Toaster} from "react-hot-toast";
+import css from "./App.module.css";
+import SearchBar from "../SearchBar/SearchBar";
+import toast, { Toaster } from "react-hot-toast";
 import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
 import { useState } from "react";
@@ -14,10 +14,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+
   const handleSearch = async (topic: string) => {
     try {
       setLoading(true);
       setError(false);
+      setMovies([]); // очищаємо попередні результати
+
       const data = await fetchMovies(topic);
 
       if (data.length === 0) {
@@ -31,22 +34,19 @@ export default function App() {
       }
 
       setMovies(data);
-      console.log("Шукаємо фільм:", topic);
-    } catch (error) {
+    } catch (err) {
       setError(true);
       toast.error("Failed to fetch movies. Please try again.");
-      console.error(error);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Обробка вибору фільму
   const handleSelectMovie = (movie: Movie) => {
-    setSelectedMovie(movie); // <-- відкриваємо модалку
+    setSelectedMovie(movie);
   };
 
-  // Закриття модалки
   const handleCloseModal = () => {
     setSelectedMovie(null);
   };
@@ -55,12 +55,19 @@ export default function App() {
     <div className={css.appContainer}>
       <Toaster position="top-center" reverseOrder={false} />
       <SearchBar onSubmit={handleSearch} />
-      <MovieGrid movies={movies} onSelect={handleSelectMovie} />
-      {loading && <Loader text="Loading movies, please wait..." />}
+
       {error && <ErrorMessage />}
-      {!loading && !error && movies.length > 0 && (
-        <MovieGrid movies={movies} onSelect={handleSelectMovie} />
+
+      {loading ? (
+        <div className={css.loaderWrapper}>
+          <Loader text="Searching for movies..." />
+        </div>
+      ) : (
+        movies.length > 0 && (
+          <MovieGrid movies={movies} onSelect={handleSelectMovie} />
+        )
       )}
+
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
