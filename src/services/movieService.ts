@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { Movie } from "../types/movie.ts";
 
-const API_TOKEN = "Bearer";
+const API_TOKEN = import.meta.env.VITE_TMDB_TOKEN;
 
 interface MoviesHttpResponse{
   page: number;
@@ -21,14 +21,16 @@ export const fetchMovies = async (topic: string): Promise<Movie[]> => {
                 },
                 headers: {
                     Authorization: `Bearer ${API_TOKEN}`,
+                    Accept: "application/json",
                 },
             }
         );
+        console.log("TMDB response:", response.data);
         return response.data.results;
     }
     catch (error) {
         console.error("Error fetching movies:", error);
-        throw error; // Прокидаємо помилку далі, щоб App.tsx міг показати toast
+        throw error;
     }
 };
     

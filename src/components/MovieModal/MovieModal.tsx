@@ -1,4 +1,6 @@
 import type { Movie } from "../../types/movie";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import css from "./MovieModal.module.css";
 
 interface MovieModalProps {
@@ -7,21 +9,43 @@ interface MovieModalProps {
 }
 
 export default function MovieModal({ movie, onClose }: MovieModalProps) {
-  return (
+
+  const modalRoot = document.getElementById("modal-root");
+  if (!modalRoot) return null;
+
+  useEffect(() => {
+    
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    
+    return () => {
+      document.body.style.overflow = originalOverflow; 
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  
+  const modalContent = (
     <div
       className={css.backdrop}
       role="dialog"
       aria-modal="true"
-      onClick={onClose}
+      onClick={onClose} 
     >
-      <div
-        className={css.modal}
-        onClick={(e) => e.stopPropagation()} 
-      > {/* <--- ТУТ була пропущена закриваюча дужка '>' */}
+      <div className={css.modal} onClick={(e) => e.stopPropagation()}>
         <button
           className={css.closeButton}
           aria-label="Close modal"
-          onClick={onClose}
+          onClick={onClose} 
         >
           &times;
         </button>
@@ -49,4 +73,6 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, modalRoot);
 }

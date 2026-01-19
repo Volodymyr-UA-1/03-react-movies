@@ -6,7 +6,7 @@ import { fetchMovies } from "../../services/movieService";
 import { useState } from "react";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
-import ErrorMessage from "../ErrorMessage/ErrorMesage";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 
 export default function App() {
@@ -17,7 +17,6 @@ export default function App() {
   const handleSearch = async (topic: string) => {
     try {
       setLoading(true);
-      setMovies([]);
       setError(false);
       const data = await fetchMovies(topic);
 
@@ -56,14 +55,12 @@ export default function App() {
     <div className={css.appContainer}>
       <Toaster position="top-center" reverseOrder={false} />
       <SearchBar onSubmit={handleSearch} />
-
+      <MovieGrid movies={movies} onSelect={handleSelectMovie} />
       {loading && <Loader text="Loading movies, please wait..." />}
       {error && <ErrorMessage />}
       {!loading && !error && movies.length > 0 && (
         <MovieGrid movies={movies} onSelect={handleSelectMovie} />
       )}
-
-      {/* MovieModal */}
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
